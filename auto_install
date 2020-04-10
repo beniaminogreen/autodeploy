@@ -36,7 +36,7 @@ git_install(){
 	git clone ${2} /tmp/${1} &&
 	cd /tmp/${1} &&
 	makepkg -sic --noconfirm
-	cd /root
+	cd /root/autodeploy
 	rm -rf /tmp/${1}
 }
 yay_install(){
