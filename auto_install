@@ -72,7 +72,7 @@ do
 done < packages.csv
 IFS=${OLDIFS}
 
-sed "s/#%wheel/%wheel/g" /etc/sudoers
+sed -i "s/#%wheel/%wheel/g" /etc/sudoers
 grep -q "/bin/zsh" /etc/shells && chsh --shell /bin/zsh ${NEW_USERNAME}
 
 rm -rf /home/${NEW_USERNAME}/.* /home/${NEW_USERNAME}/* 2>/dev/null
