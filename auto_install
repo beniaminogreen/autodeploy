@@ -35,16 +35,17 @@ git_install(){
 	#1 = name, 2 = url
 	git clone ${2} /tmp/${1} &&
 	cd /tmp/${1} &&
-	sudo -U ${NEW_USERNAME} makepkg -sic --noconfirm
+	sudo -u ${NEW_USERNAME} makepkg -sic --noconfirm
 	cd /root/autodeploy
 	rm -rf /tmp/${1}
 }
 yay_install(){
-	yay --save --answerclean All --nodiffmenu -S $1
+	sudo -u ${NEW_USERNAME} yay --save --answerclean All --nodiffmenu -S $1
 }
 
 get_username
 useradd -G wheel -md /home/${NEW_USERNAME} ${NEW_USERNAME}
+sed -i "s/# %wheel/%wheel/g" /etc/sudoers
 passwd ${NEW_USERNAME}
 
 
@@ -72,7 +73,6 @@ do
 done < packages.csv
 IFS=${OLDIFS}
 
-sed -i "s/#%wheel/%wheel/g" /etc/sudoers
 grep -q "/bin/zsh" /etc/shells && chsh --shell /bin/zsh ${NEW_USERNAME}
 
 rm -rf /home/${NEW_USERNAME}/.* /home/${NEW_USERNAME}/* 2>/dev/null
