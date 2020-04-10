@@ -35,7 +35,7 @@ git_install(){
 	#1 = name, 2 = url
 	git clone ${2} /tmp/${1} &&
 	cd /tmp/${1} &&
-	makepkg -sic --noconfirm
+	sudo -U ${NEW_USERNAME} makepkg -sic --noconfirm
 	cd /root/autodeploy
 	rm -rf /tmp/${1}
 }
