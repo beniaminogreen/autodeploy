@@ -12,6 +12,7 @@ neovim,pacman
 networkmanager,pacman
 networkmanager,pacman
 polybar,pacman
+st_luke_git,git,https://github.com/LukeSmithxyz/st
 polybar-git,yay
 pulseaudio,pacman
 pulseaudio-alsa,pacman
