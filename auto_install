@@ -1,0 +1,79 @@
+#!/bin/sh
+
+#FULL SPEED AHEAD, BOYS!
+MAKEFLAGS="-j$(nproc)"
+
+install_setup () {
+	pacman --noconfirm -Syu
+	pacman-key --init
+	pacman-key --populate
+	pacman -noconfirm -S git
+}
+
+get_username() {
+	NEW_USERNAME=blank
+	while [[ ${NEW_USERNAME} != ${NEW_USERNAME_MATCH} ]]
+	do
+		read -p "Please Enter an username"":" NEW_USERNAME
+
+		if ! [[ ${NEW_USERNAME} =~ ^[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30}\$)$ ]]
+		then
+			echo "Not a valid username. Try again."
+			continue
+		fi
+
+		read -p "Please enter the username again to confirm"":" NEW_USERNAME_MATCH
+		[ "${NEW_USERNAME}" == "${NEW_USERNAME_MATCH}" ] || echo "Those usernames did not match. Try again."
+	done
+}
+
+pacman_install(){
+	pacman --noconfirm -S ${1}
+}
+
+git_install(){
+	#1 = name, 2 = url
+	git clone ${2} /tmp/${1} &&
+	cd /tmp/${1} &&
+	makepkg -sic --noconfirm
+	cd /root
+	rm -rf /tmp/${1}
+}
+yay_install(){
+	yay --save --answerclean All --nodiffmenu -S $1
+}
+
+get_username
+useradd -G wheel -md /home/${NEW_USERNAME} ${NEW_USERNAME}
+passwd ${NEW_USERNAME}
+
+
+install_setup
+
+OLDIFS=$IFS
+IFS=','
+while read package method extra
+do
+	case $method in
+	  *pacman)
+		pacman_install ${package}
+		;;
+	  *yay)
+		yay_install ${package}
+		;;
+	  *git)
+		git_install ${package} ${extra}
+		;;
+	  *)
+	    echo "undefined method for package: ${package}, method: ${method}"
+		;;
+	esac
+done < packages.csv
+IFS=${OLDIFS}
+
+sed "s/#%wheel/%wheel/g" /etc/sudoers
+grep -q "/bin/zsh" /etc/shells && chsh --shell /bin/zsh ${NEW_USERNAME}
+
+rm -rf /home/${NEW_USERNAME}/.* /home/${NEW_USERNAME}/* 2>/dev/null
+
+sudo -u ${NEW_USERNAME} git clone https://github.com/beniaminogreen/dotfiles.git /home/${NEW_USERNAME}/
