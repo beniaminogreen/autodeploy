@@ -16,6 +16,7 @@ polybar-git,yay
 pulseaudio,pacman
 pulseaudio-alsa,pacman
 pulseaudio-bluetooth,pacman
+pulsemixer,pacman
 python,pacman
 python-pip,pacman
 python-pywal,pacman
