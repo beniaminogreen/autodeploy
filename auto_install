@@ -77,4 +77,7 @@ grep -q "/bin/zsh" /etc/shells && chsh --shell /bin/zsh ${NEW_USERNAME}
 
 rm -rf /home/${NEW_USERNAME}/.* /home/${NEW_USERNAME}/* 2>/dev/null
 
-sudo -u ${NEW_USERNAME} git clone https://github.com/beniaminogreen/dotfiles.git /home/${NEW_USERNAME}/
+sudo -u ${NEW_USERNAME} git clone https://github.com/beniaminogreen/dotfiles.git /home/${NEW_USERNAME}/.dotfiles
+cd /home/${NEW_USERNAME}/.dotfiles
+sudo -u ${NEW_USERNAME} stow *
+
